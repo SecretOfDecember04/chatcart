@@ -1,11 +1,16 @@
 import os
 import discord
+import gpt_service
 from discord.ext import commands
 from discord import app_commands
 from elasticsearch import Elasticsearch
 from dotenv import load_dotenv
 from gpt_service import generate_recommendation 
 from opensearchpy import OpenSearch
+
+# Load environment variables
+load_dotenv()
+
 
 
 def run_chatcart():
@@ -19,12 +24,9 @@ def run_chatcart():
         port=443,
     )
 
-
-    # Load environment variables
-    load_dotenv()
-
     # Discord Bot Token
-    DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')  # Set this in your .env file
+    DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+
 
     # Initialize Discord Bot
     intents = discord.Intents.all()
@@ -42,6 +44,18 @@ def run_chatcart():
         print(f'{client.user} is now running!')
 
     @tree.command()
+    async def latest_bestselling_sneakers(ctx):
+        """Get info about latest best-selling sneakers on the market!"""
+        try:
+            await ctx.channel.send("Give me a second!")
+            response = gpt_service.get_best_selling_sneakers()
+            await ctx.channel.send(f"{response}") 
+
+        except Exception as e:
+            await ctx.channel.send(f"An error occurred while fetching the latest best-selling sneakers: {str(e)}")
+
+
+    @tree.command()
     async def search_sneakers(ctx, model: str, size: float):
         """Search for sneakers by model and size."""
         query = {
@@ -54,20 +68,8 @@ def run_chatcart():
         }
 
         try:
-            response = es.search(index=ELASTIC_INDEX, body={"query": query})
-            hits = response['hits']['hits']
-            
-            if not hits:
-                await ctx.channel.send(f"No results found for model '{model}' and size '{size}'.")
-                return
 
-            # Prepare the response message
-            message = f"Results for **{model}**, size **{size}**:\n"
-            for hit in hits:
-                source = hit['_source']
-                message += f"- **Website**: {source['website']}\n  **Price**: ${source['price']}\n  **Stock**: {source['stock']}\n  **URL**: {source['url']}\n"
-
-            await ctx.channel.send(message)
+            await ctx.channel.send()
 
         except Exception as e:
             await ctx.channel.send(f"An error occurred while searching: {str(e)}")

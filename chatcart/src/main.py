@@ -1,3 +1,5 @@
+import os
+import discord
 import discord_bot
 
 if __name__ == "__main__":

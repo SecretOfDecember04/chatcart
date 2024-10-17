@@ -9,6 +9,32 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')  # Ensure this is set in your .env file
 openai.api_key = OPENAI_API_KEY
 
+def get_best_selling_sneakers() -> str:
+    """
+    Calls the GPT-4 model with a prompt asking for the latest best-selling sneakers.
+
+    Returns:
+        str: The response from GPT-4 with the list of best-selling sneakers.
+    """
+    # Define the prompt
+    prompt = (
+        "What are the current best-selling athletic shoes on the market? "
+        "Please provide the names and models, and include 8 examples in the following format: **Model** - description. Your answer should not include years or dates."
+    )
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1000
+        )
+        
+        # Extract and return the generated response text
+        return response['choices'][0]['message']['content']
+    
+    except Exception as e:
+        return f"An error occurred: {e}"
+
 def generate_recommendation(model: str, size: float, sneaker_data: list, engine: str = "gpt-4", temperature: float = 0.7, max_tokens: int = 150) -> str:
     """
     Generate sneaker recommendations using OpenAI's GPT.
