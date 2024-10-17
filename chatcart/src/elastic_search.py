@@ -46,42 +46,24 @@ def fetch_and_display_products_by_model(model_name):
         return {}
 
 
-def select_product_and_size(product_map):
-    # Select a product by ID
-    try:
-        product_id = int(input("\nEnter the Product ID you want to see: "))
-        if product_id in product_map:
-            selected_product = product_map[product_id]
-            print("\n------------------------------------------")
-            print(f"Product ID: {selected_product['product_id']}")
-            print(f"Brand: {selected_product['brand']}")
-            print(f"Model: {selected_product['model']}")
-            print(f"Description: {selected_product['description']}")
-            
-            # Display available sizes
-            sizes = [price['size'] for price in selected_product['prices']]
-            print(f"Available sizes: {', '.join(map(str, sizes))}")
-            
-            # Enter a size and handle input errors
-            size_input = input("\nEnter the size you are interested in: ")
-            try:
-                size = float(size_input)  
-                valid_size = False
-
-                for price_info in selected_product['prices']:
-                    if price_info['size'] == size:
-                        valid_size = True
-                        print(f"\nDetails for size {size}:")
-                        print(f"Source: {price_info['source']}")
-                        print(f"Price: {price_info['price']}")
-                        print(f"Stock Level: {price_info['stock_level']}")
-                        print(f"Last Update: {price_info['last_update']}")
-                
-                if not valid_size:
-                    print(f"Size {size} is not available for this model.")
-            except ValueError:
-                print(f"'{size_input}' is not a valid size. Please enter a numeric size.")
-        else:
-            print("Invalid Product ID.")
-    except ValueError:
-        print("Invalid input. Please enter a valid Product ID.")
+def select_product_and_size(product_map, product_id):
+    # Check if the product ID exists in the map
+    if product_id in product_map:
+        selected_product = product_map[product_id]
+        print("\n------------------------------------------")
+        print(f"Product ID: {selected_product['product_id']}")
+        print(f"Brand: {selected_product['brand']}")
+        print(f"Model: {selected_product['model']}")
+        print(f"Description: {selected_product['description']}")
+        
+        # Display available sizes and corresponding price details
+        print(f"Available sizes for product {product_id}:")
+        for price_info in selected_product['prices']:
+            print(f"\nSize: {price_info['size']}")
+            print(f"Source: {price_info['source']}")
+            print(f"Price: {price_info['price']}")
+            print(f"Stock Level: {price_info['stock_level']}")
+            print(f"Last Update: {price_info['last_update']}")
+        
+    else:
+        print("Invalid Product ID or product not found.")
