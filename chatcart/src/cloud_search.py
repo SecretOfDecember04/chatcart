@@ -1,20 +1,19 @@
-from opensearchpy import OpenSearch
+from elasticsearch import Elasticsearch
 
-# OpenSearch endpoint
-ELASTICSEARCH_ENDPOINT = 'https://search-chatcart-dmyohuhjp4qbxxchek5vbz65uu.aos.us-east-2.on.aws'
+cloud_id = '58822d2467104f0ea020844c565f84aa:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDc0NTM4M2Q1NDQxMzRiN2JiOWVjYWZjMWY0ZTRiYzU3JGVmY2M0ZjE5YTc1ZDRmYjA4OGNmMDBjZjgzNjhiMjBh' 
+api_key = 'WGRPbm1KSUJYWmVHWDV4Yk9lT2M6UlZURmFycl9RV1NWVWFPT3pmMUhTQQ==' 
 
-es = OpenSearch(
-    hosts=[ELASTICSEARCH_ENDPOINT],
-    http_auth=('admin', 'Admin123!'), 
-    scheme="https",
-    port=443,
+# Elasticsearch connection (using Cloud ID and API key)
+es = Elasticsearch(
+    cloud_id=cloud_id,
+    api_key=api_key
 )
 
 def fetch_and_display_products():
     # Enter the model name
     model_name = input("Enter the product model name you want to search: ")
 
-    # OpenSearch query 
+    # ElasticSearch query 
     query = {
         "query": {
             "query_string": {
