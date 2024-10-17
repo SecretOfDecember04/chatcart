@@ -9,10 +9,7 @@ es = Elasticsearch(
     api_key=api_key
 )
 
-def fetch_and_display_products():
-    # Enter the model name
-    model_name = input("Enter the product model name you want to search: ")
-
+def fetch_and_display_products(model_name):
     # ElasticSearch query 
     query = {
         "query": {

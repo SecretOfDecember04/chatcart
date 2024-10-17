@@ -5,25 +5,14 @@ from discord.ext import commands
 from discord import app_commands
 from elasticsearch import Elasticsearch
 from dotenv import load_dotenv
-from gpt_service import generate_recommendation 
-from opensearchpy import OpenSearch
+from gpt_service import generate_recommendation
+from cloud_search import fetch_and_display_products
+import time
 
 # Load environment variables
 load_dotenv()
 
-
-
 def run_chatcart():
-    # OpenSearch endpoint
-    ELASTICSEARCH_ENDPOINT = 'https://search-chatcart-dmyohuhjp4qbxxchek5vbz65uu.aos.us-east-2.on.aws'
-
-    es = OpenSearch(
-        hosts=[ELASTICSEARCH_ENDPOINT],
-        http_auth=('admin', 'Admin123!'), 
-        scheme="https",
-        port=443,
-    )
-
     # Discord Bot Token
     DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -47,32 +36,40 @@ def run_chatcart():
     async def latest_bestselling_sneakers(ctx):
         """Get info about latest best-selling sneakers on the market!"""
         try:
-            await ctx.channel.send("Give me a second!")
+            await ctx.response.send_message("Give me a second!")
             response = gpt_service.get_best_selling_sneakers()
             await ctx.channel.send(f"{response}") 
 
         except Exception as e:
-            await ctx.channel.send(f"An error occurred while fetching the latest best-selling sneakers: {str(e)}")
-
+            await ctx.response.send_message(f"An error occurred while fetching the latest best-selling sneakers: {str(e)}")
 
     @tree.command()
-    async def search_sneakers(ctx, model: str, size: float):
-        """Search for sneakers by model and size."""
-        query = {
-            "bool": {
-                "must": [
-                    {"match": {"model": model}},
-                    {"match": {"size": size}}
-                ]
-            }
-        }
-
+    async def search_by_model(ctx, model_name: str):
+        """Search for sneakers by model name using Elasticsearch."""
         try:
+            # Call the fetch_and_display_products function with the model name.
+            print(f"Searching for products with model name: {model_name}")
+            product_map = fetch_and_display_products(model_name)
 
-            await ctx.channel.send()
-
+            # Prepare and send response to Discord
+            if product_map:
+                response = f"Found {len(product_map)} products for model '{model_name}':\n"
+                for product_id, product in product_map.items():
+                    response += (
+                        f"**Product ID:** {product['product_id']}\n"
+                        f"**Brand:** {product['brand']}\n"
+                        f"**Model:** {product['model']}\n"
+                        f"**Description:** {product['description']}\n"
+                        "--------------------------------------\n"
+                    )
+            else:
+                response = f"No products found for model '{model_name}'."
+            await ctx.response.send_message(response)
+            # await ctx.channel.send(response)
+            time.sleep(5)
         except Exception as e:
-            await ctx.channel.send(f"An error occurred while searching: {str(e)}")
+            # await ctx.channel.send(f"An error occurred while searching: {str(e)}")
+            await ctx.response.send_message(f"An error occurred while searching: {str(e)}")
 
     @tree.command()
     async def recommend_sneakers(ctx, model: str, size: float):
@@ -115,12 +112,12 @@ def run_chatcart():
     async def help_command(ctx):
         """Show available commands."""
         help_text = """
-    **Sneaker Info Bot Commands:**
+    **Chat Cart Bot Commands:**
     - `/search <model> <size>`: Search for sneakers by model and size.
     - `/recommend <model> <size>`: Get recommendations based on available sneakers.
     - `/help`: Show this help message.
     """
-        await ctx.channel.send(help_text)
+        await ctx.response.send_message(help_text)
 
 
 
