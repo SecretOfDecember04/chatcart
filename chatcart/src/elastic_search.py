@@ -9,7 +9,7 @@ es = Elasticsearch(
     api_key=api_key
 )
 
-def fetch_and_display_products(model_name):
+def fetch_and_display_products_by_model(model_name):
     # ElasticSearch query 
     query = {
         "query": {
@@ -44,6 +44,7 @@ def fetch_and_display_products(model_name):
     else:
         print(f"No products found with model name containing '{model_name}'.")
         return {}
+
 
 def select_product_and_size(product_map):
     # Select a product by ID
@@ -84,26 +85,3 @@ def select_product_and_size(product_map):
             print("Invalid Product ID.")
     except ValueError:
         print("Invalid input. Please enter a valid Product ID.")
-
-def main():
-    # Display products
-    product_map = fetch_and_display_products()
-
-    if product_map:
-        while True:
-            # Select product and size
-            select_product_and_size(product_map)
-            
-            # Ask user if they want to see another product
-            choice = input("\nWould you like to see another product? (yes/no): ").strip().lower()
-            if choice == 'yes':
-                print("\nEnter the Product ID you want to see: ")
-                for product_id in product_map:
-                    print(f"Product ID: {product_id}, Model: {product_map[product_id]['model']}")
-                continue
-            else:
-                print("Exiting. Thank you!")
-                break
-
-if __name__ == "__main__":
-    main()

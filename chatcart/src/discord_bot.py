@@ -6,7 +6,9 @@ from discord import app_commands
 from elasticsearch import Elasticsearch
 from dotenv import load_dotenv
 from gpt_service import generate_recommendation
-from cloud_search import fetch_and_display_products
+from elastic_search import fetch_and_display_products_by_model
+from elastic_search import fetch_product_by_id
+from elastic_search import fetch_product_prices
 import time
 
 # Load environment variables
@@ -49,7 +51,7 @@ def run_chatcart():
         try:
             # Call the fetch_and_display_products function with the model name.
             print(f"Searching for products with model name: {model_name}")
-            product_map = fetch_and_display_products(model_name)
+            product_map = fetch_and_display_products_by_model(model_name)
 
             # Prepare and send response to Discord
             if product_map:
@@ -70,6 +72,65 @@ def run_chatcart():
         except Exception as e:
             # await ctx.channel.send(f"An error occurred while searching: {str(e)}")
             await ctx.response.send_message(f"An error occurred while searching: {str(e)}")
+
+    @tree.command()
+    async def search_by_product_id(ctx, product_id: str):
+        """Search for a sneaker by product ID and display price/stock information using Elasticsearch."""
+        try:
+            # Call the fetch_product_by_id function with the product ID.
+            print(f"Searching for product with ID: {product_id}")
+            product = fetch_product_by_id(product_id)
+
+            # Prepare and send product details to Discord
+            if product:
+                response = (
+                    f"**Product ID:** {product['product_id']}\n"
+                    f"**Brand:** {product['brand']}\n"
+                    f"**Model:** {product['model']}\n"
+                    f"**Description:** {product['description']}\n"
+                    "--------------------------------------\n"
+                )
+                
+                # Fetch prices and stock information
+                prices = fetch_product_prices(product_id)
+                if prices:
+                    sizes = [price['size'] for price in prices]
+                    response += f"\nAvailable sizes: {', '.join(map(str, sizes))}\n"
+                    await ctx.response.send_message(response)
+
+                    # Simulate user entering a size (you can later modify this for actual input handling)
+                    size_input = input("\nEnter the size you are interested in: ")
+                    try:
+                        size = float(size_input)
+                        valid_size = False
+
+                        for price_info in prices:
+                            if price_info['size'] == size:
+                                valid_size = True
+                                size_details = (
+                                    f"\nDetails for size {size}:\n"
+                                    f"**Source:** {price_info['source']}\n"
+                                    f"**Price:** {price_info['price']}\n"
+                                    f"**Stock Level:** {price_info['stock_level']}\n"
+                                    f"**Last Update:** {price_info['last_update']}\n"
+                                    "--------------------------------------\n"
+                                )
+                                await ctx.response.send_message(size_details)
+                        
+                        if not valid_size:
+                            await ctx.response.send_message(f"Size {size} is not available for this model.")
+                    except ValueError:
+                        await ctx.response.send_message(f"'{size_input}' is not a valid size. Please enter a numeric size.")
+                else:
+                    await ctx.response.send_message(f"No price or stock information available for product ID '{product_id}'.")
+
+            else:
+                await ctx.response.send_message(f"No product found with ID '{product_id}'.")
+            
+            time.sleep(5)
+        except Exception as e:
+            await ctx.response.send_message(f"An error occurred while searching: {str(e)}")
+
 
     @tree.command()
     async def recommend_sneakers(ctx, model: str, size: float):
