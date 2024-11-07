@@ -87,14 +87,14 @@ def get_clothing_suggestions(model: str) -> str:
     prompt = (
         f"You are a fashion expert specializing in matching sneakers with clothing. "
         f"Provide clothing matching suggestions for the '{model}' sneaker model. "
-        "Include a description of clothing types and styles that would complement this sneaker model."
+        "Include a description of clothing types and styles that would complement this sneaker model. Total words should be no more than 500 words"
     )
 
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=350,
+            max_tokens=500,
         )
         
         # Extract and return the generated response text
@@ -114,14 +114,14 @@ def get_sneaker_analysis(model: str) -> str:
     # Define the prompt
     prompt = (
         f"You are a sneaker expert. Provide a detailed analysis of the '{model}' sneaker model, "
-        "including its pros and cons. List at least three pros and three cons to help users make an informed decision."
+        "including its pros and cons. List at least three pros and three cons to help users make an informed decision. Total words should be no more than 500."
     )
 
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=350,
+            max_tokens=500,
         )
         
         # Extract and return the generated response text
