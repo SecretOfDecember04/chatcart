@@ -1,7 +1,7 @@
 from elasticsearch import Elasticsearch
 
-cloud_id = '58822d2467104f0ea020844c565f84aa:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDc0NTM4M2Q1NDQxMzRiN2JiOWVjYWZjMWY0ZTRiYzU3JGVmY2M0ZjE5YTc1ZDRmYjA4OGNmMDBjZjgzNjhiMjBh' 
-api_key = 'WGRPbm1KSUJYWmVHWDV4Yk9lT2M6UlZURmFycl9RV1NWVWFPT3pmMUhTQQ==' 
+cloud_id = 'My_deployment:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDk1NzViMDU2ZGQyMDQ2M2M4OGI3ZTA1MDU0NjY2MTg4JDM3Mjc3NjcxMzYwODQ1MTJhODg0MTE3MTFiMTZiM2Fl' 
+api_key = 'dUF1ZEE1TUI4XzhkM09TV1huUmg6MzlVQzV2aU9TaGF1dFZJbDV5d2g3QQ==' 
 
 # Elasticsearch connection (using Cloud ID and API key)
 es = Elasticsearch(
