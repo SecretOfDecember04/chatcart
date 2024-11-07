@@ -147,7 +147,7 @@ def run_chatcart():
         }
 
         try:
-            response = es.search(index=ELASTIC_INDEX, body={"query": query})
+            response = es.search(index=products, body={"query": query})
             hits = response['hits']['hits']
             
             if not hits:
