@@ -190,7 +190,7 @@ def run_chatcart():
     async def clothing_suggestions(ctx, model: str):
         """Get clothing matching suggestions for a selected sneaker model."""
         try:
-            await ctx.response.send_message("Fetching clothing suggestions...")
+            await ctx.response.send_message("Generating clothing suggestions...")
             suggestions = get_clothing_suggestions(model)
             await ctx.channel.send(f"**Clothing Suggestions for '{model}':**\n{suggestions}")
         except Exception as e:

@@ -85,9 +85,11 @@ def get_clothing_suggestions(model: str) -> str:
     """
     # Define the prompt
     prompt = (
-        f"You are a fashion expert specializing in matching sneakers with clothing. "
-        f"Provide clothing matching suggestions for the '{model}' sneaker model. "
-        "Include a description of clothing types and styles that would complement this sneaker model. No more than 300 words"
+        f"You are a fashion expert specializing in matching sneakers with clothing and accessories. "
+        f"Provide brief and structured clothing matching suggestions for the '{model}' sneaker model. "
+        "The response should include two separate sections: 'For Men' and 'For Women'. "
+        "Within each section, list brief recommendations (1-2 lines) for 'Tops', 'Bottoms', 'Outerwear', "
+        "and 'Accessories' that would complement this sneaker model."
     )
 
     try:
@@ -111,10 +113,11 @@ def get_sneaker_analysis(model: str) -> str:
     :param model: The sneaker model name.
     :return: GPT-generated analysis with pros and cons.
     """
-    # Define the prompt
+    # Define the prompt with brevity emphasized
     prompt = (
-        f"You are a sneaker expert. Provide a detailed analysis of the '{model}' sneaker model, "
-        "including its pros and cons. List at least three pros and three cons to help users make an informed decision. No more than 300 words."
+        f"You are a sneaker expert. Provide a concise analysis of the '{model}' sneaker model, "
+        "including its pros and cons. List exactly three brief pros and three brief cons, with each point in 1-2 lines, "
+        "to help users make an informed decision."
     )
 
     try:
