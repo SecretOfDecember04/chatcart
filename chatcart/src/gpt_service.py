@@ -78,56 +78,54 @@ def generate_recommendation(model: str, size: float, sneaker_data: list, engine:
 
 def get_clothing_suggestions(model: str) -> str:
     """
-    Generate clothing matching suggestions for the selected sneaker model.
+    Generate clothing matching suggestions for a sneaker model using GPT-4.
 
-    Args:
-        model (str): The sneaker model.
-
-    Returns:
-        str: GPT-generated clothing suggestions.
+    :param model: The sneaker model name.
+    :return: GPT-generated clothing suggestions.
     """
-    prompt = f"""
-    You are a fashion expert. Provide clothing matching suggestions for someone wearing the '{model}' sneaker. 
-    Consider factors like color, style, and occasion. List outfit ideas that would go well with this sneaker model.
-    """
+    # Define the prompt
+    prompt = (
+        f"You are a fashion expert specializing in matching sneakers with clothing. "
+        f"Provide clothing matching suggestions for the '{model}' sneaker model. "
+        "Include a description of clothing types and styles that would complement this sneaker model."
+    )
 
     try:
-        response = openai.Completion.create(
-            engine="gpt-4o",  
-            prompt=prompt,
-            temperature=0.7,
-            max_tokens=1000
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=200,
         )
-
-        return response.choices[0].text.strip()
-
+        
+        # Extract and return the generated response text
+        return response['choices'][0]['message']['content']
+    
     except Exception as e:
         return f"An error occurred while generating clothing suggestions: {str(e)}"
 
+
 def get_sneaker_analysis(model: str) -> str:
     """
-    Generate an analysis of a sneaker model with pros and cons.
+    Generate an analysis of a sneaker model with pros and cons using GPT-4.
 
-    Args:
-        model (str): The sneaker model.
-
-    Returns:
-        str: GPT-generated analysis of the sneaker with pros and cons.
+    :param model: The sneaker model name.
+    :return: GPT-generated analysis with pros and cons.
     """
-    prompt = f"""
-    You are a sneaker expert. Provide an in-depth analysis of the '{model}' sneaker.
-    List the pros and cons of this model, covering aspects like comfort, style, durability, and performance.
-    """
+    # Define the prompt
+    prompt = (
+        f"You are a sneaker expert. Provide a detailed analysis of the '{model}' sneaker model, "
+        "including its pros and cons. List at least three pros and three cons to help users make an informed decision."
+    )
 
     try:
-        response = openai.Completion.create(
-            engine="gpt-4o", 
-            prompt=prompt,
-            temperature=0.7,
-            max_tokens=1000
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=200,
         )
-
-        return response.choices[0].text.strip()
-
+        
+        # Extract and return the generated response text
+        return response['choices'][0]['message']['content']
+    
     except Exception as e:
         return f"An error occurred while generating sneaker analysis: {str(e)}"
