@@ -24,9 +24,9 @@ def get_best_selling_sneakers() -> str:
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o",
+            model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=1000
+            max_tokens=500
         )
         
         # Extract and return the generated response text
@@ -92,7 +92,7 @@ def get_clothing_suggestions(model: str) -> str:
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o",
+            model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=200,
         )
@@ -119,7 +119,7 @@ def get_sneaker_analysis(model: str) -> str:
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o",
+            model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=200,
         )
