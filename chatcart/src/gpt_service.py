@@ -74,3 +74,60 @@ def generate_recommendation(model: str, size: float, sneaker_data: list, engine:
 
     except Exception as e:
         return f"Error generating recommendation: {str(e)}"
+    
+
+def get_clothing_suggestions(model: str) -> str:
+    """
+    Generate clothing matching suggestions for the selected sneaker model.
+
+    Args:
+        model (str): The sneaker model.
+
+    Returns:
+        str: GPT-generated clothing suggestions.
+    """
+    prompt = f"""
+    You are a fashion expert. Provide clothing matching suggestions for someone wearing the '{model}' sneaker. 
+    Consider factors like color, style, and occasion. List outfit ideas that would go well with this sneaker model.
+    """
+
+    try:
+        response = openai.Completion.create(
+            engine="gpt-4o",  
+            prompt=prompt,
+            temperature=0.7,
+            max_tokens=1000
+        )
+
+        return response.choices[0].text.strip()
+
+    except Exception as e:
+        return f"An error occurred while generating clothing suggestions: {str(e)}"
+
+def get_sneaker_analysis(model: str) -> str:
+    """
+    Generate an analysis of a sneaker model with pros and cons.
+
+    Args:
+        model (str): The sneaker model.
+
+    Returns:
+        str: GPT-generated analysis of the sneaker with pros and cons.
+    """
+    prompt = f"""
+    You are a sneaker expert. Provide an in-depth analysis of the '{model}' sneaker.
+    List the pros and cons of this model, covering aspects like comfort, style, durability, and performance.
+    """
+
+    try:
+        response = openai.Completion.create(
+            engine="gpt-4o", 
+            prompt=prompt,
+            temperature=0.7,
+            max_tokens=1000
+        )
+
+        return response.choices[0].text.strip()
+
+    except Exception as e:
+        return f"An error occurred while generating sneaker analysis: {str(e)}"

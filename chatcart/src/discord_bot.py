@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord import app_commands
 from elasticsearch import Elasticsearch
 from dotenv import load_dotenv
-from gpt_service import generate_recommendation
+from gpt_service import generate_recommendation, get_clothing_suggestions, get_sneaker_analysis
 from elastic_search import fetch_and_display_products_by_model
 from elastic_search import select_product_and_size
 # from elastic_search import select_product_and_size
@@ -177,10 +177,35 @@ def run_chatcart():
         help_text = """
     **Chat Cart Bot Commands:**
     - `/search <model> <size>`: Search for sneakers by model and size.
+    - `/search_by_product_id <product_id>`: Search for a sneaker by product ID.
     - `/recommend <model> <size>`: Get recommendations based on available sneakers.
+    - `/clothing_suggestions <model>`: Get clothing matching suggestions for a sneaker model.
+    - `/sneaker_analysis <model>`: Get an analysis of a sneaker model with pros and cons.
+    - `/latest_bestselling_sneakers`: Get info about the latest best-selling sneakers.
     - `/help`: Show this help message.
     """
         await ctx.response.send_message(help_text)
+
+    @tree.command()
+    async def clothing_suggestions(ctx, model: str):
+        """Get clothing matching suggestions for a selected sneaker model."""
+        try:
+            await ctx.response.send_message("Fetching clothing suggestions...")
+            suggestions = get_clothing_suggestions(model)
+            await ctx.channel.send(f"**Clothing Suggestions for '{model}':**\n{suggestions}")
+        except Exception as e:
+            await ctx.response.send_message(f"An error occurred: {str(e)}")
+
+    @tree.command()
+    async def sneaker_analysis(ctx, model: str):
+        """Get an analysis of a sneaker model with pros and cons."""
+        try:
+            await ctx.response.send_message("Fetching sneaker analysis...")
+            analysis = get_sneaker_analysis(model)
+            await ctx.channel.send(f"**Analysis of '{model}':**\n{analysis}")
+        except Exception as e:
+            await ctx.response.send_message(f"An error occurred: {str(e)}")
+
 
 
 
