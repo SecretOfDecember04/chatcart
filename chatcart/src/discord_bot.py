@@ -11,6 +11,7 @@ from elastic_search import select_product_and_size
 # from elastic_search import select_product_and_size
 # from elastic_search import fetch_product_prices
 import time
+import csv
 
 # Load environment variables
 load_dotenv()
@@ -251,6 +252,66 @@ def run_chatcart():
                 await ctx.response.send_message("Could not retrieve details for your favorites.")
         else:
             await ctx.response.send_message("Your favorites list is empty.")
+
+    def get_top_discounted_sneakers(csv_file, top_n=10):
+        # List to hold the processed shoe data
+        sneakers = []
+        
+        try:
+            # Read the CSV file and process each line
+            with open(csv_file, mode='r', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    brand_model = row['Shoe Brand & Model']
+                    original_price = float(row['Original Price'])
+                    discounted_price = float(row['Discounted Price'])
+                    
+                    # Calculate the discount percentage
+                    discount_percentage = ((original_price - discounted_price) / original_price) * 100
+                    
+                    sneakers.append({
+                        'brand_model': brand_model,
+                        'original_price': original_price,
+                        'discounted_price': discounted_price,
+                        'discount_percentage': discount_percentage
+                    })
+                    
+            # Sort the list by discount_percentage in descending order and pick the top N items
+            top_discounted_sneakers = sorted(sneakers, key=lambda x: x['discount_percentage'], reverse=True)[:top_n]
+            return top_discounted_sneakers
+        
+        except Exception as e:
+            print(f"Error processing the CSV file: {str(e)}")
+            return None
+
+    # Add the new command to your bot
+    @tree.command()
+    async def top_discounted_sneakers(ctx):
+        """Get the top 10 sneakers with the largest discounts."""
+        try:
+            # Path to the CSV file
+            csv_file = 'dealmoon_deals.csv'
+
+            # Get the top 10 discounted sneakers
+            top_sneakers = get_top_discounted_sneakers(csv_file, top_n=10)
+            
+            if top_sneakers:
+                # Prepare the response message with the top 10 discounted sneakers
+                response_message = "**Top 10 Discounted Sneakers:**\n\n"
+                for sneaker in top_sneakers:
+                    response_message += (
+                        f"**{sneaker['brand_model']}**\n"
+                        f"Original Price: ${sneaker['original_price']:.2f}\n"
+                        f"Discounted Price: ${sneaker['discounted_price']:.2f}\n"
+                        f"Discount: {sneaker['discount_percentage']:.2f}%\n"
+                        "--------------------------------------\n"
+                    )
+                await ctx.response.send_message(response_message)
+            else:
+                await ctx.response.send_message("Sorry, there was an error retrieving the data.")
+
+        except Exception as e:
+            await ctx.response.send_message(f"An error occurred while fetching the top discounted sneakers: {str(e)}")
 
 
 
