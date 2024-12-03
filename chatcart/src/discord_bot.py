@@ -37,6 +37,7 @@ def run_chatcart():
     # Guild ID for "ChatCart" Server
     ServerID = discord.Object(id=1284660112786456648)
 
+    user_favorites = {}
 
     @client.event
     async def on_ready():
@@ -206,6 +207,50 @@ def run_chatcart():
         except Exception as e:
             await ctx.response.send_message(f"An error occurred: {str(e)}")
 
+    @tree.command()
+    async def add_to_favorites(ctx, product_id: int):
+        """Add a sneaker to your favorites."""
+        user_id = str(ctx.user.id)
+        if user_id not in user_favorites:
+            user_favorites[user_id] = []
+        user_favorites[user_id].append(product_id)
+        await ctx.response.send_message(f"Product ID {product_id} has been added to your favorites.")
+
+    @tree.command()
+    async def view_favorites(ctx):
+        """View your favorite sneakers."""
+        user_id = str(ctx.user.id)
+        if user_id in user_favorites and user_favorites[user_id]:
+            favorite_ids = user_favorites[user_id]
+            details = []
+            for product_id in favorite_ids:
+                query = {
+                    "query": {
+                        "term": {
+                            "product_id": product_id
+                        }
+                    }
+                }
+                response = es.search(index="products", body=query)
+                if response['hits']['total']['value'] > 0:
+                    details.append(response['hits']['hits'][0]['_source'])
+
+            if details:
+                # Prepare formatted response
+                response_message = "**Your Favorite Sneakers:**\n\n"
+                for product in details:
+                    response_message += (
+                        f"**Product ID:** {product['product_id']}\n"
+                        f"**Brand:** {product['brand']}\n"
+                        f"**Model:** {product['model']}\n"
+                        f"**Description:** {product['description']}\n"
+                        "--------------------------------------\n"
+                    )
+                await ctx.response.send_message(response_message)
+            else:
+                await ctx.response.send_message("Could not retrieve details for your favorites.")
+        else:
+            await ctx.response.send_message("Your favorites list is empty.")
 
 
 
